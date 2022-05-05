@@ -63,7 +63,7 @@ func (r *eventRepository) GetEvent(ctx context.Context, id string) (model.Event,
 		if err != nil {
 			return time.Time{}, fmt.Errorf("parse unix time: %w", err)
 		}
-		return time.Unix(unix, 0), nil
+		return time.Unix(unix, 0).UTC(), nil
 	}
 
 	startAt, err := parseTime(eventStartAtKey)
