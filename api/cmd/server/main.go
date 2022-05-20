@@ -12,11 +12,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/paralleltree/go-leaderboard/internal/config"
+	"github.com/paralleltree/go-leaderboard/internal/di"
 )
 
 func main() {
 	env := config.GetEnv()
-	router := gin.New()
+	router := buildRouter(env)
 	server := http.Server{Addr: fmt.Sprintf(":%d", env.Port), Handler: router}
 
 	done := make(chan struct{})
@@ -47,4 +48,10 @@ func main() {
 	}
 
 	fmt.Fprintln(os.Stderr, "Exiting.")
+}
+
+func buildRouter(env config.Env) *gin.Engine {
+	router := gin.New()
+	di.InflateHandlers(env, router)
+	return router
 }
