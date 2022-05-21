@@ -6,6 +6,7 @@ import (
 
 	"github.com/paralleltree/go-leaderboard/internal/contract/driver"
 	"github.com/paralleltree/go-leaderboard/internal/contract/repository"
+	"github.com/paralleltree/go-leaderboard/internal/model"
 )
 
 type scoreRepository struct {
@@ -55,7 +56,7 @@ func (r *scoreRepository) GetRank(ctx context.Context, eventId string, userId st
 	return rank, true, nil
 }
 
-func (r *scoreRepository) GetLeaderboard(ctx context.Context, eventId string, startRank, endRank int64) ([]repository.UserRank, bool, error) {
+func (r *scoreRepository) GetLeaderboard(ctx context.Context, eventId string, startRank, endRank int64) ([]model.UserRank, bool, error) {
 	items, ok, err := r.sortedSetDriver.GetRankedList(ctx, buildScoreSetKey(eventId), startRank-1, endRank-1)
 	if err != nil {
 		return nil, false, err
@@ -63,9 +64,9 @@ func (r *scoreRepository) GetLeaderboard(ctx context.Context, eventId string, st
 	if !ok {
 		return nil, false, nil
 	}
-	result := make([]repository.UserRank, 0, len(items))
+	result := make([]model.UserRank, 0, len(items))
 	for i, item := range items {
-		item := repository.UserRank{
+		item := model.UserRank{
 			Rank:   startRank + int64(i),
 			UserId: item.Member,
 			Score:  r.scoringStrategy.ExtractScore(int64(item.Score)),

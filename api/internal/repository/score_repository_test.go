@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/paralleltree/go-leaderboard/internal/contract/driver"
-	repositoryContract "github.com/paralleltree/go-leaderboard/internal/contract/repository"
+	"github.com/paralleltree/go-leaderboard/internal/model"
 	repositoryImpl "github.com/paralleltree/go-leaderboard/internal/repository"
 	mock_driver "github.com/paralleltree/go-leaderboard/mock/driver"
 )
@@ -124,7 +124,7 @@ func TestScoreRepository_GetLeaderboard(t *testing.T) {
 		{Score: 20, Member: "user1"},
 		{Score: 10, Member: "user2"},
 	}
-	wantRanks := []repositoryContract.UserRank{
+	wantRanks := []model.UserRank{
 		{Rank: 10, UserId: "user1", Score: 20},
 		{Rank: 11, UserId: "user2", Score: 10},
 	}

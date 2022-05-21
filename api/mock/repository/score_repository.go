@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	repository "github.com/paralleltree/go-leaderboard/internal/contract/repository"
+	model "github.com/paralleltree/go-leaderboard/internal/model"
 )
 
 // MockScoreRepository is a mock of ScoreRepository interface.
@@ -36,10 +36,10 @@ func (m *MockScoreRepository) EXPECT() *MockScoreRepositoryMockRecorder {
 }
 
 // GetLeaderboard mocks base method.
-func (m *MockScoreRepository) GetLeaderboard(ctx context.Context, eventId string, startRank, endRank int64) ([]repository.UserRank, bool, error) {
+func (m *MockScoreRepository) GetLeaderboard(ctx context.Context, eventId string, startRank, endRank int64) ([]model.UserRank, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLeaderboard", ctx, eventId, startRank, endRank)
-	ret0, _ := ret[0].([]repository.UserRank)
+	ret0, _ := ret[0].([]model.UserRank)
 	ret1, _ := ret[1].(bool)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
