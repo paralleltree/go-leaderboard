@@ -19,8 +19,9 @@ func InflateHandlers(env config.Env, router *gin.Engine) {
 	redisHashDriver := driver.NewRedisHashDriver(env.RedisEndpoint)
 	redisSortedSetDriver := driver.NewRedisSortedSetDriver(env.RedisEndpoint)
 	scoringStrategy := driver.NewScoringWithRemainingTimeStrategy(timeBitWidth)
+	idGenerator := driver.NewUuidGenerator()
 
-	eventRepository := repository.NewEventRepository(redisHashDriver)
+	eventRepository := repository.NewEventRepository(idGenerator, redisHashDriver)
 	scoreRepository := repository.NewScoreRepository(scoringStrategy, redisSortedSetDriver)
 
 	registerEventUsecase := usecase.NewRegisterEventUsecase(eventRepository)

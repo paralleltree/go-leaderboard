@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -17,9 +16,10 @@ import (
 func TestEventRepository_RegisterEvent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+	idGenerator := mock_driver.NewMockUniqueIdGenerator(mockCtrl)
 	hashDriver := mock_driver.NewMockHashDriver(mockCtrl)
 
-	eventRepository := repository.NewEventRepository(hashDriver)
+	eventRepository := repository.NewEventRepository(idGenerator, hashDriver)
 
 	keyPrefix := "events:"
 	event := model.Event{
@@ -27,6 +27,7 @@ func TestEventRepository_RegisterEvent(t *testing.T) {
 		StartAt: time.Date(2022, 5, 1, 12, 0, 0, 0, time.UTC),
 		EndAt:   time.Date(2022, 5, 1, 13, 0, 0, 0, time.UTC),
 	}
+	issuedId := "test_event"
 	wantFields := map[string]string{
 		"name":     event.Name,
 		"start_at": strconv.FormatInt(event.StartAt.Unix(), 10),
@@ -34,13 +35,11 @@ func TestEventRepository_RegisterEvent(t *testing.T) {
 	}
 	ctx := context.Background()
 
+	idGenerator.EXPECT().
+		GenerateNewId().
+		Return(issuedId, nil)
 	hashDriver.EXPECT().
-		Set(ctx, gomock.Any(), wantFields).
-		Do(func(ctx context.Context, id string, fields map[string]string) {
-			if !strings.HasPrefix(id, keyPrefix) {
-				t.Fatalf("event data key does not start with `%s`: %s", keyPrefix, id)
-			}
-		}).
+		Set(ctx, fmt.Sprintf("%s%s", keyPrefix, issuedId), wantFields).
 		Return(nil)
 
 	id, err := eventRepository.RegisterEvent(ctx, event)
@@ -55,9 +54,10 @@ func TestEventRepository_RegisterEvent(t *testing.T) {
 func TestEventRepository_GetEvent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+	idGenerator := mock_driver.NewMockUniqueIdGenerator(mockCtrl)
 	hashDriver := mock_driver.NewMockHashDriver(mockCtrl)
 
-	eventRepository := repository.NewEventRepository(hashDriver)
+	eventRepository := repository.NewEventRepository(idGenerator, hashDriver)
 
 	id := "111-111"
 	wantName := "test event"
@@ -95,9 +95,10 @@ func TestEventRepository_GetEvent(t *testing.T) {
 func TestEventRepository_GetEvent_WhenEventNotExists(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+	idGenerator := mock_driver.NewMockUniqueIdGenerator(mockCtrl)
 	hashDriver := mock_driver.NewMockHashDriver(mockCtrl)
 
-	eventRepository := repository.NewEventRepository(hashDriver)
+	eventRepository := repository.NewEventRepository(idGenerator, hashDriver)
 
 	key := "111-111"
 	wantOk := false

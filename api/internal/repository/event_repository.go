@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/paralleltree/go-leaderboard/internal/contract/driver"
 	"github.com/paralleltree/go-leaderboard/internal/contract/repository"
 	"github.com/paralleltree/go-leaderboard/internal/model"
@@ -19,12 +18,17 @@ const (
 )
 
 type eventRepository struct {
-	hashDriver driver.HashDriver
+	idGenerator driver.UniqueIdGenerator
+	hashDriver  driver.HashDriver
 }
 
-func NewEventRepository(hashDriver driver.HashDriver) repository.EventRepository {
+func NewEventRepository(
+	idGenerator driver.UniqueIdGenerator,
+	hashDriver driver.HashDriver,
+) repository.EventRepository {
 	return &eventRepository{
-		hashDriver: hashDriver,
+		idGenerator: idGenerator,
+		hashDriver:  hashDriver,
 	}
 }
 
@@ -34,15 +38,14 @@ func (r *eventRepository) RegisterEvent(ctx context.Context, event model.Event) 
 		eventStartAtKey: strconv.FormatInt(event.StartAt.Unix(), 10),
 		eventEndAtKey:   strconv.FormatInt(event.EndAt.Unix(), 10),
 	}
-	id, err := uuid.NewRandom()
+	id, err := r.idGenerator.GenerateNewId()
 	if err != nil {
-		return "", fmt.Errorf("generate new uuid: %w", err)
+		return "", fmt.Errorf("generate new id: %w", err)
 	}
-	idStr := id.String()
-	if err := r.hashDriver.Set(ctx, buildEventKey(idStr), fields); err != nil {
+	if err := r.hashDriver.Set(ctx, buildEventKey(id), fields); err != nil {
 		return "", fmt.Errorf("set event data: %w", err)
 	}
-	return idStr, nil
+	return id, nil
 }
 
 func (r *eventRepository) GetEvent(ctx context.Context, id string) (model.Event, bool, error) {
