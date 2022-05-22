@@ -26,11 +26,13 @@ func InflateHandlers(env config.Env, router *gin.Engine) {
 
 	getEventsUsecase := usecase.NewGetEventsUsecase(eventRepository)
 	registerEventUsecase := usecase.NewRegisterEventUsecase(eventRepository)
+	getLeaderboardUsecase := usecase.NewGetLeaderboardUsecase(eventRepository, scoreRepository)
 	setScoreUsecase := usecase.NewSetScoreUsecase(eventRepository, scoreRepository, buildCurrentTimeProvider())
 
 	// inflate handlers
 	router.GET("/events", handler.BuildGetEventsHandler(getEventsUsecase))
 	router.POST("/events", handler.BuildRegisterEventHandler(registerEventUsecase))
+	router.GET("/events/:id/leaderboard", handler.BuildGetLeaderboardHandler(getLeaderboardUsecase))
 	router.PUT("/events/:id/scores", handler.BuildSetScoreHandler(setScoreUsecase))
 }
 
