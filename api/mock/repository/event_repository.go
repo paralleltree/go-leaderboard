@@ -51,6 +51,21 @@ func (mr *MockEventRepositoryMockRecorder) GetEvent(ctx, id interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvent", reflect.TypeOf((*MockEventRepository)(nil).GetEvent), ctx, id)
 }
 
+// GetEvents mocks base method.
+func (m *MockEventRepository) GetEvents(ctx context.Context, page, count int64) ([]model.Record[model.Event], error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEvents", ctx, page, count)
+	ret0, _ := ret[0].([]model.Record[model.Event])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetEvents indicates an expected call of GetEvents.
+func (mr *MockEventRepositoryMockRecorder) GetEvents(ctx, page, count interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEvents", reflect.TypeOf((*MockEventRepository)(nil).GetEvents), ctx, page, count)
+}
+
 // RegisterEvent mocks base method.
 func (m *MockEventRepository) RegisterEvent(ctx context.Context, event model.Event) (string, error) {
 	m.ctrl.T.Helper()

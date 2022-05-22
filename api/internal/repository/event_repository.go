@@ -15,20 +15,24 @@ const (
 	eventNameKey    = "name"
 	eventStartAtKey = "start_at"
 	eventEndAtKey   = "end_at"
+	eventListKey    = "events_ordered_by_end_at"
 )
 
 type eventRepository struct {
-	idGenerator driver.UniqueIdGenerator
-	hashDriver  driver.HashDriver
+	idGenerator     driver.UniqueIdGenerator
+	hashDriver      driver.HashDriver
+	sortedSetDriver driver.SortedSetDriver
 }
 
 func NewEventRepository(
 	idGenerator driver.UniqueIdGenerator,
 	hashDriver driver.HashDriver,
+	sortedSetDriver driver.SortedSetDriver,
 ) repository.EventRepository {
 	return &eventRepository{
-		idGenerator: idGenerator,
-		hashDriver:  hashDriver,
+		idGenerator:     idGenerator,
+		hashDriver:      hashDriver,
+		sortedSetDriver: sortedSetDriver,
 	}
 }
 
@@ -44,6 +48,9 @@ func (r *eventRepository) RegisterEvent(ctx context.Context, event model.Event) 
 	}
 	if err := r.hashDriver.Set(ctx, buildEventKey(id), fields); err != nil {
 		return "", fmt.Errorf("set event data: %w", err)
+	}
+	if err := r.sortedSetDriver.SetScore(ctx, eventListKey, id, float64(event.EndAt.Unix())); err != nil {
+		return "", fmt.Errorf("set event to list: %w", err)
 	}
 	return id, nil
 }
@@ -82,6 +89,38 @@ func (r *eventRepository) GetEvent(ctx context.Context, id string) (model.Event,
 		StartAt: startAt,
 		EndAt:   endAt,
 	}, true, nil
+}
+
+func (r *eventRepository) GetEvents(ctx context.Context, page, count int64) ([]model.Record[model.Event], error) {
+	if page < 1 {
+		return nil, fmt.Errorf("page must be greater than 0")
+	}
+	if count < 1 {
+		return nil, fmt.Errorf("count must be greater than 0")
+	}
+	start := (page - 1) * count
+	end := page*count - 1
+
+	ids, ok, err := r.sortedSetDriver.GetRankedList(ctx, eventListKey, start, end)
+	if err != nil {
+		return nil, fmt.Errorf("get event list: %w", err)
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	res := make([]model.Record[model.Event], 0, len(ids))
+	for _, id := range ids {
+		event, ok, err := r.GetEvent(ctx, id.Member)
+		if err != nil {
+			return nil, fmt.Errorf("get event: %w", err)
+		}
+		if !ok {
+			continue
+		}
+		res = append(res, model.Record[model.Event]{Id: id.Member, Item: event})
+	}
+	return res, nil
 }
 
 func buildEventKey(id string) string {

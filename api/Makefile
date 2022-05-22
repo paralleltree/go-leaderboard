@@ -12,6 +12,6 @@ help:
 
 .PHONY: mockgen
 mockgen:
-	@go install github.com/golang/mock/mockgen@v1.6.0
+	@go install github.com/golang/mock/mockgen@73266f9366fcf2
 	@rm -rf mock/
 	@go generate ./...
