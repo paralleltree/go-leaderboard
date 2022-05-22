@@ -24,9 +24,21 @@ func TestScoringWithRemainingTimeStrategy_ComposeScore(t *testing.T) {
 			expectError:   true,
 		},
 		{
+			name:          "negative score",
+			score:         -10,
+			remainingTime: 0,
+			expectError:   true,
+		},
+		{
 			name:          "remaining time overflows",
 			score:         0,
 			remainingTime: int64(2 << timeBitWidth),
+			expectError:   true,
+		},
+		{
+			name:          "negative time",
+			score:         0,
+			remainingTime: -10,
 			expectError:   true,
 		},
 		{

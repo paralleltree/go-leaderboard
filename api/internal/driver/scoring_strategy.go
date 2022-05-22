@@ -22,10 +22,10 @@ func NewScoringWithRemainingTimeStrategy(timeBitWidth int64) driver.ScoringStrat
 }
 
 func (s scoringWithRemainingTimeStrategy) ComposeScore(time, score int64) (int64, error) {
-	if !isValidBitWidth(time, s.timeBitWidth) {
+	if !isValidBitWidth(time, s.timeBitWidth) || time < 0 {
 		return 0, fmt.Errorf("time out of range: %d", time)
 	}
-	if !isValidBitWidth(score, significandBitWidth-s.timeBitWidth) {
+	if !isValidBitWidth(score, significandBitWidth-s.timeBitWidth) || score < 0 {
 		return 0, fmt.Errorf("score out of range: %d", score)
 	}
 	return (score << s.timeBitWidth) | time, nil
