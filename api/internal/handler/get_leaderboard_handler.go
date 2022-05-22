@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/paralleltree/go-leaderboard/internal/contract/usecase"
+	"github.com/paralleltree/go-leaderboard/internal/lib"
 	"github.com/paralleltree/go-leaderboard/internal/model"
 )
 
@@ -31,7 +32,7 @@ func BuildGetLeaderboardHandler(usecase usecase.GetLeaderboardUsecase) gin.Handl
 			c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
 			return
 		}
-		c.JSON(http.StatusOK, convertToJsonUserRank(ranks))
+		c.JSON(http.StatusOK, lib.Map(ranks, func(r model.UserRank) userRank { return userRank(r) }))
 	}
 }
 
@@ -39,12 +40,4 @@ type userRank struct {
 	Rank   int64  `json:"rank"`
 	UserId string `json:"user_id"`
 	Score  int64  `json:"score"`
-}
-
-func convertToJsonUserRank(src []model.UserRank) []userRank {
-	res := make([]userRank, 0, len(src))
-	for _, v := range src {
-		res = append(res, userRank(v))
-	}
-	return res
 }
