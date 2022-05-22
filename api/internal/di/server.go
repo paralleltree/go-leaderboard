@@ -24,10 +24,12 @@ func InflateHandlers(env config.Env, router *gin.Engine) {
 	eventRepository := repository.NewEventRepository(idGenerator, redisHashDriver, redisSortedSetDriver)
 	scoreRepository := repository.NewScoreRepository(scoringStrategy, redisSortedSetDriver)
 
+	getEventsUsecase := usecase.NewGetEventsUsecase(eventRepository)
 	registerEventUsecase := usecase.NewRegisterEventUsecase(eventRepository)
 	setScoreUsecase := usecase.NewSetScoreUsecase(eventRepository, scoreRepository, buildCurrentTimeProvider())
 
 	// inflate handlers
+	router.GET("/events", handler.BuildGetEventsHandler(getEventsUsecase))
 	router.POST("/events", handler.BuildRegisterEventHandler(registerEventUsecase))
 	router.PUT("/events/:id/scores", handler.BuildSetScoreHandler(setScoreUsecase))
 }

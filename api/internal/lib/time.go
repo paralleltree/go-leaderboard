@@ -9,3 +9,7 @@ func ParseDateTime(s string) (time.Time, error) {
 	}
 	return t.UTC(), nil
 }
+
+func FormatDateTime(t time.Time) string {
+	return t.UTC().Format(time.RFC3339)
+}
