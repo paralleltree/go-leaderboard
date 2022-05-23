@@ -9,6 +9,7 @@ import (
 type Env struct {
 	Port          int    `default:"8000"`
 	RedisEndpoint string `split_words:"true" required:"true"`
+	AllowOrigin   string `split_words:"true"`
 }
 
 func GetEnv() Env {

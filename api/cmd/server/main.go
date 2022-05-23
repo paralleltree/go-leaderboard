@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/paralleltree/go-leaderboard/internal/config"
 	"github.com/paralleltree/go-leaderboard/internal/di"
+	"github.com/paralleltree/go-leaderboard/internal/lib"
 )
 
 func main() {
@@ -52,6 +53,7 @@ func main() {
 
 func buildRouter(env config.Env) *gin.Engine {
 	router := gin.New()
+	lib.InflateRouterMiddleware(router, env)
 	di.InflateHandlers(env, router)
 	return router
 }
