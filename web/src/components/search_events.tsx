@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { ApiClient } from '../api_client';
+import { Pager } from './pager';
 import { EventModel } from '../models/event';
 import { EventItem } from './event_item';
 
@@ -44,11 +45,7 @@ export const SearchEvents = ({ client }: Props) => {
         </ul>}
         {hasError && <p>An error occured.</p>}
       </div>
-      <div>
-        <button disabled={page < 2} onClick={() => setPage(page - 1)}>Previous</button>
-        <span>{page}</span>
-        <button onClick={() => setPage(page + 1)}>Next</button>
-      </div>
+      <Pager page={page} onPageChange={setPage} />
     </div>
   );
 };
