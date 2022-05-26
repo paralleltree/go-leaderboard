@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { EventModel } from '../models/event';
 
@@ -14,7 +15,7 @@ export const EventItem = ({ event }: Props) => {
         <span>{event.name}</span>
       </div>
       <div>
-        <a href={`/events/${event.id}`}>Show</a>
+        <Link to={`/events/${event.id}`}>Show</Link>
       </div>
     </div>
   )
