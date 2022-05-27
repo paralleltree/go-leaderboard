@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ApiClient } from '../api_client';
 import { Pager } from './pager';
@@ -13,7 +14,18 @@ export const SearchEvents = ({ client }: Props) => {
   const [fetching, setFetching] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [events, setEvents] = useState<EventModel[]>([]);
-  const [page, setPage] = useState(1);
+
+  const navigate = useNavigate();
+  const search = useLocation().search;
+  const query = new URLSearchParams(search);
+  const queryPage = parseInt(query.get("page") || "1");
+  const page = (queryPage === NaN) ? 1 : queryPage;
+
+  const onPageChange = (page: number) => {
+    const newQuery = new URLSearchParams(query);
+    newQuery.set("page", page.toString());
+    navigate({ search: newQuery.toString() });
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -45,7 +57,7 @@ export const SearchEvents = ({ client }: Props) => {
         </ul>}
         {hasError && <p>An error occured.</p>}
       </div>
-      <Pager page={page} onPageChange={setPage} />
+      <Pager page={page} onPageChange={onPageChange} />
     </div>
   );
 };
