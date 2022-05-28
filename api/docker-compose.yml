@@ -1,0 +1,16 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '63790:6379'
+    volumes:
+      - './data/redis:/data'
+  api:
+    build: '.'
+    ports:
+      - '8000:8000'
+    environment:
+      - REDIS_ENDPOINT
+      - ALLOW_ORIGIN
+      - GIN_MODE
