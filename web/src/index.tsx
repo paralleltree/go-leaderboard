@@ -1,4 +1,5 @@
 import 'normalize.css';
+import './style.sass';
 
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';

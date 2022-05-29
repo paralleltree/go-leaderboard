@@ -46,10 +46,10 @@ export const SearchEvents = ({ client }: Props) => {
     <div>
       <div>
         {fetching && <span>Loading...</span>}
-        {!fetching && !hasError && <ul>
+        {!fetching && !hasError && <ul className='event-search-list'>
           {
             events.map(event =>
-              <li key={event.id}>
+              <li key={event.id} className='event-search-list__event-item'>
                 <EventItem event={event} />
               </li>
             )
