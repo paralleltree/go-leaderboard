@@ -49,15 +49,20 @@ export const EventLeaderboard = ({ client }: Props) => {
     <div>
       <div>
         {!fetching &&
-          <ul>
+          <ul className='user-rank-list'>
             {
               ranks.map(rank =>
-                <li key={rank.userId}>
-                  <div>
-                    {rank.rank}
-                  </div>
-                  <div>
-                    {rank.userId}
+                <li key={rank.userId} className='user-rank-list__user-rank-item'>
+                  <div className='user-rank-item'>
+                    <div className='user-rank-item__rank'>
+                      {rank.rank}
+                    </div>
+                    <div className='user-rank-item__user'>
+                      {rank.userId}
+                    </div>
+                    <div className='user-rank-item__score'>
+                      {rank.score}
+                    </div>
                   </div>
                 </li>
               )
