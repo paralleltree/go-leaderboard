@@ -44,6 +44,7 @@ export const SearchEvents = ({ client }: Props) => {
 
   return (
     <div>
+      <h2>Events</h2>
       <div>
         {fetching && <span>Loading...</span>}
         {!fetching && !hasError && <ul className='event-search-list'>

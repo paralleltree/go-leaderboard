@@ -47,6 +47,7 @@ export const EventLeaderboard = ({ client }: Props) => {
 
   return (
     <div>
+      <h2>Leaderboard</h2>
       <div>
         {!fetching &&
           <ul className='user-rank-list'>
